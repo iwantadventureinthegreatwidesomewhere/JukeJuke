@@ -27,7 +27,7 @@ ffmpeg_options = {"options": "-vn"}
 
 ytdl = YoutubeDL(ytdl_format_options)
 
-music_queue = []
+music_playlist = []
 
 
 class YTDLSource(discord.PCMVolumeTransformer):
@@ -105,7 +105,7 @@ async def play(interaction: discord.Interaction, song: str):
         voice_client = interaction.guild.voice_client
 
     player = await YTDLSource.from_url(song, loop=bot.loop, stream=True)
-    music_queue.append(player)
+    music_playlist.append(player)
 
     if not voice_client.is_playing():
         await play_next(interaction)
@@ -114,9 +114,9 @@ async def play(interaction: discord.Interaction, song: str):
 
 
 async def play_next(interaction):
-    if music_queue:
+    if music_playlist:
         voice_client = interaction.guild.voice_client
-        player = music_queue.pop(0)
+        player = music_playlist.pop(0)
         voice_client.play(player,
                           after=lambda e: asyncio.run_coroutine_threadsafe(
                               play_next(interaction), bot.loop))
@@ -146,22 +146,23 @@ async def resume(interaction: discord.Interaction):
                                                 ephemeral=True)
 
 
-@bot.tree.command(name="stop",
-                  description="JukeJuke stops the music and clears the queue")
+@bot.tree.command(
+    name="stop",
+    description="JukeJuke stops the music and clears the playlist")
 async def stop(interaction: discord.Interaction):
     voice_client = interaction.guild.voice_client
-    music_queue.clear()
+    music_playlist.clear()
     if voice_client and voice_client.is_playing():
         voice_client.stop()
         await interaction.response.send_message(
-            "*JukeJuke* stopped the music and cleared the queue.")
+            "*JukeJuke* stopped the music and cleared the playlist.")
     else:
         await interaction.response.send_message(
             "No song is currently playing.", ephemeral=True)
 
 
-@bot.tree.command(name="skip",
-                  description="JukeJuke skips to the next song in the queue")
+@bot.tree.command(
+    name="skip", description="JukeJuke skips to the next song in the playlist")
 async def skip(interaction: discord.Interaction):
     voice_client = interaction.guild.voice_client
     if voice_client and voice_client.is_playing():
@@ -173,18 +174,19 @@ async def skip(interaction: discord.Interaction):
             "No song is currently playing.", ephemeral=True)
 
 
-@bot.tree.command(name="see-queue",
-                  description="JukeJuke displays the current music queue")
-async def queue(interaction: discord.Interaction):
-    if music_queue:
-        queue_text = "\n".join([
-            f"{i + 1}. {player.title}" for i, player in enumerate(music_queue)
+@bot.tree.command(name="playlist",
+                  description="JukeJuke displays the current music playlist")
+async def playlist(interaction: discord.Interaction):
+    if music_playlist:
+        playlist_text = "\n".join([
+            f"{i + 1}. {player.title}"
+            for i, player in enumerate(music_playlist)
         ])
         await interaction.response.send_message(
-            f"*JukeJuke's* current queue:\n{queue_text}")
+            f"*JukeJuke's* current playlist:\n{playlist_text}")
     else:
         await interaction.response.send_message(
-            "The queue is currently empty.", ephemeral=True)
+            "The playlist is currently empty.", ephemeral=True)
 
 
 bot.run(os.getenv("DISCORD_BOT_TOKEN"))
