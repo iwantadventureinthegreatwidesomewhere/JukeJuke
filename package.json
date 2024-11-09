@@ -1,0 +1,21 @@
+{
+  "name": "jukejuke",
+  "version": "1.0.0",
+  "description": "Meet JukeJuke, the adorable music-loving bot that’s here to bring melody to your Discord server! 🎤",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/voice": "^0.17.0",
+    "@distube/ytdl-core": "^4.15.1",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "libsodium-wrappers": "^0.7.15",
+    "yt-search": "^2.12.1",
+    "ytsr": "^3.8.4"
+  }
+}
