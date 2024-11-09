@@ -5,7 +5,6 @@ const {
   createAudioPlayer,
   createAudioResource,
   AudioPlayerStatus,
-  VoiceConnectionStatus,
 } = require("@discordjs/voice");
 const ytdl = require("@distube/ytdl-core");
 const ytSearch = require("yt-search");
