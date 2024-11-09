@@ -94,7 +94,7 @@ client.on("interactionCreate", async (interaction) => {
         `*JukeJuke* added **${songInfo.title}** to the playlist.`
       );
     } else {
-      playMusic(song, interaction, connection);
+      playMusic(song, interaction, connection, true);
     }
   }
 
@@ -178,13 +178,18 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-async function playMusic(song, interaction, connection) {
+async function playMusic(song, interaction, connection, notify = false) {
   try {
     const songInfo = await getSongInfo(song);
 
     const stream = await ytdl(songInfo.url, {
       filter: "audioonly",
-      quality: "highestaudio",
+      fmt: "mp3",
+      highWaterMark: 1 << 30,
+      liveBuffer: 20000,
+      dlChunkSize: 4096,
+      bitrate: 128,
+      quality: "lowestaudio",
       requestOptions: {
         headers: {
           "User-Agent":
@@ -207,9 +212,11 @@ async function playMusic(song, interaction, connection) {
       }
     });
 
-    await interaction.followUp(
-      `*JukeJuke* is now playing **${songInfo.title}**.`
-    );
+    if (notify) {
+      await interaction.followUp(
+        `*JukeJuke* is now playing **${songInfo.title}**.`
+      );
+    }
   } catch (error) {
     console.error("Error playing music:", error);
     await interaction.followUp("There was an error playing the song.");
